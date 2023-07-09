@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Character from "./components/Character";
 import {
@@ -6,12 +6,19 @@ import {
   getCharacterWithHighestTotalPointsForSkill,
 } from "./utils/appUtils";
 import SkillCheckSection from "./components/SkillCheckSection";
+import { API_HOST } from "./consts";
 
 function App() {
   const [characters, setCharacters] = useState({});
   const [idSeq, setIdSeq] = useState(1);
   const [characterForPartySkillSection, setCharacterForPartySkillSection] =
     useState(null);
+
+  useEffect(() => {
+    fetch(`${API_HOST}/api/{reynoldmorel}/character`)
+      .then((response) => response.json())
+      .then(({ body }) => setCharacters(body || {}));
+  }, []);
 
   const onResetCharacters = () => {
     setCharacters(
@@ -38,7 +45,14 @@ function App() {
       [character.id]: { ...character, [prop]: value },
     });
 
-  const onSaveAllCharacters = () => {};
+  const onSaveAllCharacters = () =>
+    fetch(`${API_HOST}/api/{reynoldmorel}/character`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(characters),
+    });
 
   const onLastSkillCheck = (value, character) =>
     setCharacterForPartySkillSection({

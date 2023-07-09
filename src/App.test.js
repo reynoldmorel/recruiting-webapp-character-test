@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
 import { act } from "react-dom/test-utils";
+import { buildCharacterMap } from "./utils/appUtils";
 
 const addCharacters = async (count) => {
   for (let i = 1; i <= count; i++) {
@@ -20,10 +21,15 @@ const addCharacters = async (count) => {
 describe("App", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.spyOn(global, "fetch").mockResolvedValue({
+      json: jest.fn().mockResolvedValue({ body: {} }),
+    });
   });
 
-  it("should render app properly", () => {
-    render(<App />);
+  it("should render app properly", async () => {
+    await act(async () => {
+      render(<App />);
+    });
 
     expect(
       screen.getByRole("button", { name: "Add New Character" })
@@ -38,13 +44,17 @@ describe("App", () => {
   });
 
   it("should add multiple characters", async () => {
-    render(<App />);
+    await act(async () => {
+      render(<App />);
+    });
 
     await addCharacters(3);
   });
 
   it("should reset all characters", async () => {
-    render(<App />);
+    await act(async () => {
+      render(<App />);
+    });
 
     await addCharacters(2);
 
@@ -78,7 +88,9 @@ describe("App", () => {
   });
 
   it("should use character with highest points for Dexterirty in Skill Check Party MODE", async () => {
-    render(<App />);
+    await act(async () => {
+      render(<App />);
+    });
 
     await addCharacters(2);
 
@@ -113,5 +125,19 @@ describe("App", () => {
     });
 
     expect(screen.getAllByText("Character: 1")).toHaveLength(2);
+  });
+
+  it("should load saved characters", async () => {
+    jest.spyOn(global, "fetch").mockResolvedValue({
+      json: jest.fn().mockResolvedValue({ body: { 1: buildCharacterMap(1) } }),
+    });
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Character: 1")).toBeInTheDocument();
+    });
   });
 });
