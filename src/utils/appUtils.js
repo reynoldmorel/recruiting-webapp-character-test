@@ -4,6 +4,36 @@ import {
   SKILL_LIST,
 } from "../consts";
 
+export const computeModifier = (pointsOfReference, points) => {
+  const totalPoints = points - pointsOfReference;
+  const modifier =
+    points >= pointsOfReference ? Math.floor(totalPoints / 2) : totalPoints;
+
+  return modifier;
+};
+
+export const computeSkillPointsAvailable = (pointsOfReference, modifier) =>
+  pointsOfReference + 4 * modifier;
+
+export const computeAttributesTotalPoints = (attributes) => {
+  const totalAttributePoints = Object.values(attributes).reduce(
+    (totalPoints, { points }) => totalPoints + points,
+    0
+  );
+
+  return totalAttributePoints;
+};
+
+export const computeSkillsTotalPoints = (skills, attributes) => {
+  const totalSkillConsumedPoints = Object.entries(skills).reduce(
+    (totalSkillPoints, [, { points, attributeModifier }]) =>
+      totalSkillPoints + points + attributes[attributeModifier].modifier,
+    0
+  );
+
+  return totalSkillConsumedPoints;
+};
+
 export const buildAttributesMapWithDefaults = () =>
   ATTRIBUTE_LIST.reduce(
     (accumulated, attr) => ({

@@ -1,11 +1,38 @@
 import {
+  computeModifier,
+  computeSkillPointsAvailable,
   buildAttributesMapWithDefaults,
   buildSkillsMapWithDefaults,
   buildCharacterMap,
+  computeAttributesTotalPoints,
+  computeSkillsTotalPoints,
   computeSkillTotalPointsForSelectedSkill,
 } from "./appUtils";
 
 describe("appUtils", () => {
+  it("should compute modifier and return 0", () => {
+    expect(computeModifier(10, 10)).toEqual(0);
+  });
+
+  it("should compute modifier and return a negative number", () => {
+    expect(computeModifier(10, 9)).toEqual(-1);
+    expect(computeModifier(10, 8)).toEqual(-2);
+  });
+
+  it("should compute modifier and return a positive number per each 2 points over the reference", () => {
+    expect(computeModifier(10, 12)).toEqual(1);
+    expect(computeModifier(10, 13)).toEqual(1);
+    expect(computeModifier(10, 14)).toEqual(2);
+  });
+
+  it("should compute skill points available", () => {
+    expect(computeSkillPointsAvailable(10, 2)).toEqual(18);
+    expect(computeSkillPointsAvailable(10, 1)).toEqual(14);
+    expect(computeSkillPointsAvailable(10, 0)).toEqual(10);
+    expect(computeSkillPointsAvailable(10, -1)).toEqual(6);
+    expect(computeSkillPointsAvailable(10, -7)).toEqual(-18);
+  });
+
   it("should build attributes map", () => {
     expect(buildAttributesMapWithDefaults()).toEqual({
       Charisma: {
@@ -218,6 +245,30 @@ describe("appUtils", () => {
         },
       },
     });
+  });
+
+  it("should compute attributes total points", () => {
+    expect(
+      computeAttributesTotalPoints({
+        testAttribute1: { points: 5 },
+        testAttribute2: { points: 10 },
+      })
+    ).toEqual(15);
+  });
+
+  it("should compute skills total points", () => {
+    expect(
+      computeSkillsTotalPoints(
+        {
+          testSkill1: { attributeModifier: "testAttribute1", points: 2 },
+          testSkill2: { attributeModifier: "testAttribute2", points: 10 },
+        },
+        {
+          testAttribute1: { points: 5, modifier: -5 },
+          testAttribute2: { points: 10, modifier: 0 },
+        }
+      )
+    ).toEqual(7);
   });
 
   it("should compute skill total points for selected skill", () => {
