@@ -21,3 +21,24 @@ export const buildSkillsMapWithDefaults = () =>
     }),
     {}
   );
+
+export const buildCharacterMap = (id) => ({
+  id,
+  attributes: buildAttributesMapWithDefaults(),
+  skills: buildSkillsMapWithDefaults(),
+  lastSkillCheck: null,
+  selectedClass: null,
+});
+
+export const computeSkillTotalPointsForSelectedSkill = (
+  character,
+  selectedSkill
+) => {
+  const { skills, attributes } = character;
+  const skill = skills[selectedSkill] || {};
+  const attribute = attributes[skill.attributeModifier] || {};
+
+  const skillTotalPoints = skill.points + attribute.modifier;
+
+  return skillTotalPoints;
+};
