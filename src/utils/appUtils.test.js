@@ -7,6 +7,7 @@ import {
   computeAttributesTotalPoints,
   computeSkillsTotalPoints,
   computeSkillTotalPointsForSelectedSkill,
+  getCharacterWithHighestTotalPointsForSkill,
 } from "./appUtils";
 
 describe("appUtils", () => {
@@ -285,5 +286,78 @@ describe("appUtils", () => {
         "testSkill1"
       )
     ).toEqual(-3);
+  });
+
+  it("should get character with highest total points for given skill", () => {
+    const characters = {
+      1: {
+        id: 1,
+        skills: {
+          testSkill1: { attributeModifier: "testAttribute1", points: 2 },
+          testSkill2: { attributeModifier: "testAttribute2", points: 11 },
+        },
+        attributes: {
+          testAttribute1: { points: 5, modifier: -5 },
+          testAttribute2: { points: 26, modifier: 8 },
+        },
+      },
+      2: {
+        id: 2,
+        skills: {
+          testSkill1: { attributeModifier: "testAttribute1", points: 3 },
+          testSkill2: { attributeModifier: "testAttribute2", points: 10 },
+        },
+        attributes: {
+          testAttribute1: { points: 5, modifier: -5 },
+          testAttribute2: { points: 20, modifier: 5 },
+        },
+      },
+      3: {
+        id: 3,
+        skills: {
+          testSkill1: { attributeModifier: "testAttribute1", points: 1 },
+          testSkill2: { attributeModifier: "testAttribute2", points: 8 },
+        },
+        attributes: {
+          testAttribute1: { points: 15, modifier: 2 },
+          testAttribute2: { points: 20, modifier: 5 },
+        },
+      },
+    };
+
+    expect(
+      getCharacterWithHighestTotalPointsForSkill(characters, "testSkill1")
+    ).toEqual(characters[3]);
+    expect(
+      getCharacterWithHighestTotalPointsForSkill(characters, "testSkill2")
+    ).toEqual(characters[1]);
+  });
+
+  it("should return null when there are no characters for get character with highest total points for given skill", () => {
+    const characters = {};
+
+    expect(
+      getCharacterWithHighestTotalPointsForSkill(characters, "testSkill1")
+    ).toBeNull();
+  });
+
+  it("should return null when no skill is selected for get character with highest total points for given skill", () => {
+    const characters = {
+      1: {
+        id: 1,
+        skills: {
+          testSkill1: { attributeModifier: "testAttribute1", points: 2 },
+          testSkill2: { attributeModifier: "testAttribute2", points: 11 },
+        },
+        attributes: {
+          testAttribute1: { points: 5, modifier: -5 },
+          testAttribute2: { points: 26, modifier: 8 },
+        },
+      },
+    };
+
+    expect(
+      getCharacterWithHighestTotalPointsForSkill(characters, null)
+    ).toBeNull();
   });
 });

@@ -72,3 +72,34 @@ export const computeSkillTotalPointsForSelectedSkill = (
 
   return skillTotalPoints;
 };
+
+export const getCharacterWithHighestTotalPointsForSkill = (
+  characters,
+  selectedSkill
+) => {
+  if (!characters || !selectedSkill) {
+    return null;
+  }
+
+  const characterList = Object.values(characters);
+
+  let highestCharacter = null;
+  let highestSkillTotalPoints = null;
+
+  for (const character of characterList) {
+    const skillTotalPoints = computeSkillTotalPointsForSelectedSkill(
+      character,
+      selectedSkill
+    );
+
+    if (
+      highestSkillTotalPoints === null ||
+      highestSkillTotalPoints < skillTotalPoints
+    ) {
+      highestSkillTotalPoints = skillTotalPoints;
+      highestCharacter = character;
+    }
+  }
+
+  return highestCharacter;
+};
